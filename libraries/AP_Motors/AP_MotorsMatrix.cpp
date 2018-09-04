@@ -369,6 +369,23 @@ void AP_MotorsMatrix::setup_motors(motor_frame_class frame_class, motor_frame_ty
 
     switch (frame_class) {
 
+        case MOTOR_FRAME_HEXA_DC:
+
+            /*
+             * Fortem Tech Modified xFold Cinema Hex Frame
+             * 2018.08.29
+             * All arms reconfigured
+            */
+
+            add_motor(AP_MOTORS_MOT_1, 100, AP_MOTORS_MATRIX_YAW_FACTOR_CW, 2);
+            add_motor(AP_MOTORS_MOT_2, -100, AP_MOTORS_MATRIX_YAW_FACTOR_CCW, 5);
+            add_motor(AP_MOTORS_MOT_3, -45, AP_MOTORS_MATRIX_YAW_FACTOR_CW, 6);
+            add_motor(AP_MOTORS_MOT_4, 148, AP_MOTORS_MATRIX_YAW_FACTOR_CCW, 3);
+            add_motor(AP_MOTORS_MOT_5, 45, AP_MOTORS_MATRIX_YAW_FACTOR_CCW, 1);
+            add_motor(AP_MOTORS_MOT_6, -148, AP_MOTORS_MATRIX_YAW_FACTOR_CW, 4);
+            success = true;
+            break;
+
         case MOTOR_FRAME_QUAD:
             switch (frame_type) {
                 case MOTOR_FRAME_TYPE_PLUS:
