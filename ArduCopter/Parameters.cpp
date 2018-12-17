@@ -856,7 +856,7 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @Param: DEV_OPTIONS
     // @DisplayName: Development options
     // @Description: Bitmask of developer options. The meanings of the bit fields in this parameter may vary at any time. Developers should check the source code for current meaning
-    // @Bitmask: 0:ADSBMavlinkProcessing
+    // @Bitmask: 0:ADSBMavlinkProcessing,1:DevOptionVFR_HUDRelativeAlt
     // @User: Advanced
     AP_GROUPINFO("DEV_OPTIONS", 7, ParametersG2, dev_options, 0),
 
@@ -1031,21 +1031,15 @@ ParametersG2::ParametersG2(void)
   old object. This should be zero for top level parameters.
  */
 const AP_Param::ConversionInfo conversion_table[] = {
-    { Parameters::k_param_battery_monitoring, 0,      AP_PARAM_INT8,  "BATT_MONITOR" },
-    { Parameters::k_param_battery_volt_pin,   0,      AP_PARAM_INT8,  "BATT_VOLT_PIN" },
-    { Parameters::k_param_battery_curr_pin,   0,      AP_PARAM_INT8,  "BATT_CURR_PIN" },
-    { Parameters::k_param_volt_div_ratio,     0,      AP_PARAM_FLOAT, "BATT_VOLT_MULT" },
-    { Parameters::k_param_curr_amp_per_volt,  0,      AP_PARAM_FLOAT, "BATT_AMP_PERVOLT" },
-    { Parameters::k_param_pack_capacity,      0,      AP_PARAM_INT32, "BATT_CAPACITY" },
     { Parameters::k_param_log_bitmask_old,    0,      AP_PARAM_INT16, "LOG_BITMASK" },
     { Parameters::k_param_serial0_baud,       0,      AP_PARAM_INT16, "SERIAL0_BAUD" },
     { Parameters::k_param_serial1_baud,       0,      AP_PARAM_INT16, "SERIAL1_BAUD" },
     { Parameters::k_param_serial2_baud,       0,      AP_PARAM_INT16, "SERIAL2_BAUD" },
     { Parameters::k_param_arming_check_old,   0,      AP_PARAM_INT8,  "ARMING_CHECK" },
     // battery
-    { Parameters::k_param_fs_batt_voltage,    0,      AP_PARAM_INT8,  "BATT_FS_LOW_VOLT" },
-    { Parameters::k_param_fs_batt_mah,        0,      AP_PARAM_INT8,  "BATT_FS_LOW_MAH" },
-    { Parameters::k_param_failsafe_battery_enabled,0, AP_PARAM_INT8,  "BATT_FS_LOW_ACT" },
+    { Parameters::k_param_fs_batt_voltage,    0,      AP_PARAM_FLOAT,  "BATT_LOW_VOLT" },
+    { Parameters::k_param_fs_batt_mah,        0,      AP_PARAM_FLOAT,  "BATT_LOW_MAH" },
+    { Parameters::k_param_failsafe_battery_enabled,0, AP_PARAM_INT8,   "BATT_FS_LOW_ACT" },
 };
 
 void Copter::load_parameters(void)
@@ -1079,7 +1073,7 @@ void Copter::load_parameters(void)
 
     // setup AP_Param frame type flags
     AP_Param::set_frame_type_flags(AP_PARAM_FRAME_COPTER);
-    
+
 }
 
 // handle conversion of PID gains from Copter-3.3 to Copter-3.4
@@ -1185,6 +1179,21 @@ void Copter::convert_pid_parameters(void)
     for (uint8_t i=0; i<table_size; i++) {
         AP_Param::convert_old_parameter(&loiter_conversion_info[i], 1.0f);
     }
+
+    // TradHeli default parameters
+#if FRAME_CONFIG == HELI_FRAME
+    AP_Param::set_default_by_name("LOIT_ACC_MAX", 500.0f);
+    AP_Param::set_default_by_name("LOIT_BRK_ACCEL", 125.0f);
+    AP_Param::set_default_by_name("LOIT_BRK_DELAY", 1.0f);
+    AP_Param::set_default_by_name("LOIT_BRK_JERK", 250.0f);
+    AP_Param::set_default_by_name("LOIT_SPEED", 3000.0f);
+    AP_Param::set_default_by_name("PHLD_BRAKE_ANGLE", 800.0f);
+    AP_Param::set_default_by_name("PHLD_BRAKE_RATE", 4.0f);
+    AP_Param::set_default_by_name("PSC_ACCZ_P", 0.28f);
+    AP_Param::set_default_by_name("PSC_VELXY_D", 0.0f);
+    AP_Param::set_default_by_name("PSC_VELXY_I", 0.5f);
+    AP_Param::set_default_by_name("PSC_VELXY_P", 1.0f);
+#endif
 
     const uint8_t old_rc_keys[14] = { Parameters::k_param_rc_1_old,  Parameters::k_param_rc_2_old,
                                       Parameters::k_param_rc_3_old,  Parameters::k_param_rc_4_old,
